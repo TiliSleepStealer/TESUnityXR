@@ -808,6 +808,17 @@ namespace TESUnity.NIF
             flags = reader.ReadLEUInt16();
         }
     }
+    public class NiWireframeProperty : NiProperty
+    {
+        public ushort flags;
+
+        public override void Deserialize(UnityBinaryReader reader)
+        {
+            base.Deserialize(reader);
+
+            flags = reader.ReadLEUInt16();
+        }
+    }
     public class NiVertexColorProperty : NiProperty
     {
         public ushort flags;

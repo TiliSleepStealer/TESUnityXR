@@ -252,6 +252,20 @@ public static class OVRExtensions
 		}
 		return null;
 	}
+
+	public static Transform FindChildRecursiveExact(this Transform parent, string name)
+	{
+		foreach (Transform child in parent)
+		{
+			if (child.name == name)
+				return child;
+
+			var result = child.FindChildRecursiveExact(name);
+			if (result != null)
+				return result;
+		}
+		return null;
+	}
 }
 
 //4 types of node state properties that can be queried with UnityEngine.XR

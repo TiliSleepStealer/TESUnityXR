@@ -394,73 +394,50 @@ namespace TESUnity
             // Load animation file.
             if (NPC_.MODL != null)
             {
-                var anim = nifManager.InstantiateNIF($"meshes\\{NPC_.MODL.value}");
+                //var anim = nifManager.InstantiateNIF($"meshes\\{NPC_.MODL.value}");
                 //anim.name = "NPC_Anim";
                 //anim.transform.parent = npcTransform;
             }
 
-            var head = new GameObject("Head");
-            head.transform.parent = npcTransform;
-            head.transform.localPosition = new Vector3(0, 1.2f, 0); // FIXME
-
-            // Load head model
-            if (NPC_.BNAM != null)
-            {
-                var headModel = nifManager.InstantiateNIF($"meshes\\b\\{NPC_.BNAM.value}.NIF");
-                headModel.transform.parent = head.transform;
-                headModel.transform.localPosition = Vector3.zero;
-            }
-
-            // Load hair model
-            if (NPC_.KNAM != null)
-            {
-                var hairModel = nifManager.InstantiateNIF($"meshes\\b\\{NPC_.KNAM.value}.NIF");
-                hairModel.transform.parent = head.transform;
-                hairModel.transform.localPosition = Vector3.zero;
-            }
+            var anim = nifManager.InstantiateNIF($"meshes\\base_anim.nif");
+            anim.transform.parent = npcTransform;
+            anim.transform.localPosition = Vector3.zero;
 
             // Load body parts
             var race = NPC_.RNAM.value.ToLower();
             var gender = NPC_.FLAG.Flags == NPC_Record.NPCFlags.Female ? "f" : "m";
-            var ankle = $"b_n_{race}_{gender}_ankle";
-            var foot = $"b_n_{race}_{gender}_foot";
-            var forarm = $"b_n_{race}_{gender}_forearm";
-            var groin = $"b_n_{race}_{gender}_groin";
-            var hands1st = $"b_n_{race}_{gender}_hands.1st";
-            var knee = $"b_n_{race}_{gender}_knee";
-            var neck = $"b_n_{race}_{gender}_neck";
-            var skins = $"b_n_{race}_{gender}_skins";
-            var upperArm = $"b_n_{race}_{gender}_upper arm";
-            var upperLeg = $"b_n_{race}_{gender}_upper leg";
-            var wrist = $"b_n_{race}_{gender}_wrist";
+            var head = CreateBodyPart(NPC_.BNAM.value, "Head");
+            var hair = CreateBodyPart(NPC_.KNAM.value, "Head");
+            var ankle = CreateBodyPart($"b_n_{race}_{gender}_ankle", "Left Ankle");
+            var ankle2 = CreateBodyPart($"b_n_{race}_{gender}_ankle", "Right Ankle");
+            var foot = CreateBodyPart($"b_n_{race}_{gender}_foot", "Left Foot");
+            var foot2 = CreateBodyPart($"b_n_{race}_{gender}_foot", "Right Foot");
+            var forarm = CreateBodyPart($"b_n_{race}_{gender}_forearm", "Left Forearm");
+            var forarm2 = CreateBodyPart($"b_n_{race}_{gender}_forearm", "Right Forearm");
+            var groin = CreateBodyPart($"b_n_{race}_{gender}_groin", "Groin");
+            var wrist = CreateBodyPart($"b_n_{race}_{gender}_wrist", "Left Wrist");
+            var wrist2 = CreateBodyPart($"b_n_{race}_{gender}_wrist", "Right Wrist");
+            var knee = CreateBodyPart($"b_n_{race}_{gender}_knee", "Left Knee");
+            var knee2 = CreateBodyPart($"b_n_{race}_{gender}_knee", "Right Knee");
+            var neck = CreateBodyPart($"b_n_{race}_{gender}_neck", "Neck");
+            var skins = CreateBodyPart($"b_n_{race}_{gender}_skins", "Chest"); // includes hands
+            var upperArm = CreateBodyPart($"b_n_{race}_{gender}_upper arm", "Left Upper Arm");
+            var upperArm2 = CreateBodyPart($"b_n_{race}_{gender}_upper arm", "Right Upper Arm");
+            var upperLeg = CreateBodyPart($"b_n_{race}_{gender}_upper leg", "Left Upper Leg");
+            var upperLeg2 = CreateBodyPart($"b_n_{race}_{gender}_upper leg", "Right Upper Leg");
 
-            // Add a fake body: FIXME
-            var body = new GameObject("Body");
-            var bodyTransform = body.transform;
-            bodyTransform.parent = npcTransform;
-            bodyTransform.localPosition = Vector3.zero;
+            
 
-            /*CreateBodyPart(ankle, bodyTransform);
-            CreateBodyPart(foot, bodyTransform);
-            CreateBodyPart(forarm, bodyTransform);
-            CreateBodyPart(groin, bodyTransform);
-            CreateBodyPart(hands1st, bodyTransform);
-            CreateBodyPart(knee, bodyTransform);
-            CreateBodyPart(neck, bodyTransform);
-            CreateBodyPart(skins, bodyTransform);
-            CreateBodyPart(upperArm, bodyTransform);
-            CreateBodyPart(upperLeg, bodyTransform);
-            CreateBodyPart(wrist, bodyTransform);*/
-
-            var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            capsule.transform.parent = body.transform;
-            capsule.transform.localPosition = new Vector3(0, 0.5f, 0);
-            capsule.transform.localScale = new Vector3(0.25f, 0.6f, 0.25f);
-
-            GameObject CreateBodyPart(string path, Transform parent)
+            GameObject CreateBodyPart(string path, string boneName)
             {
+                if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(boneName))
+                    return null;
                 var part = nifManager.InstantiateNIF($"meshes\\b\\{path}.NIF");
-                part.transform.parent = parent;
+                part.transform.parent = anim.transform.FindChildRecursiveExact(boneName);
+                part.transform.localPosition = Vector3.zero;
+                part.transform.localRotation = Quaternion.Euler(0f, 0,0);
+                if (boneName.Contains("Left"))
+                    part.transform.localScale = new Vector3(-1f, 1f, 1f);
                 return part;
             }
 

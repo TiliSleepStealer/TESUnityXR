@@ -169,6 +169,13 @@ namespace TESUnity.NIF
 
                 return prop;
             }
+            else if (StringUtils.Equals(nodeTypeBytes, "NiWireframeProperty"))
+            {
+                var prop = new NiWireframeProperty();
+                prop.Deserialize(reader);
+
+                return prop;
+            }
             else if (StringUtils.Equals(nodeTypeBytes, "NiVertexColorProperty"))
             {
                 var prop = new NiVertexColorProperty();
